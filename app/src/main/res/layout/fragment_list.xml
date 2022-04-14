@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Список (fragment)"
+        android:textSize="24sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/addListItemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="add"/>
+
+        <Button
+            android:id="@+id/removeAllItemsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="r_all"/>
+
+        <Button
+            android:id="@+id/removeLastItemsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="r_last"/>
+
+        <Button
+            android:id="@+id/editSecondItemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="e_2"/>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</LinearLayout>

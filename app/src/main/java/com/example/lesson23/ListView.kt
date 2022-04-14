@@ -1,6 +1,6 @@
 package com.example.lesson23
 
-interface MainView {
+interface ListView {
     fun displayList(users: List<User>)
     fun askForWriteExternalStoragePermission()
 

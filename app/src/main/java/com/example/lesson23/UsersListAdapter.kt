@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.TextView
+import com.example.lesson23.databinding.ListItemBinding
 
 
 class UsersListAdapter(
@@ -19,18 +19,17 @@ class UsersListAdapter(
     override fun getItemId(position: Int) = position.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val itemView = when(convertView) {
+        val itemView = when (convertView) {
             null -> layoutInflater.inflate(R.layout.list_item, parent, false)
             else -> convertView
         }
 
         val item = getItem(position)
 
-        val fullNameTextView = itemView.findViewById<TextView>(R.id.userFullNameTextView)
-        val userAddressTextView = itemView.findViewById<TextView>(R.id.userAddressTextView)
-
-        fullNameTextView.text = item.firstName + " " + item.lastName
-        userAddressTextView.text = item.address
+        ListItemBinding.bind(itemView).apply {
+            userFullNameTextView.text = item.firstName + " " + item.lastName
+            userAddressTextView.text = item.address
+        }
 
         return itemView
     }

@@ -1,9 +1,9 @@
 package com.example.lesson23
 
-class MainController {
-    private var view: MainView? = null
+class ListController {
+    private var view: ListView? = null
 
-    fun onViewReady(view: MainView) {
+    fun onViewReady(view: ListView) {
         this.view = view
         view.displayList(UserRepository.users)
 
