@@ -11,6 +11,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lesson23.databinding.FragmentListBinding
 
 private const val REQUEST_PERMISSION_CODE = 2
@@ -18,6 +19,8 @@ private const val REQUEST_PERMISSION_CODE = 2
 
 class ListFragment : Fragment(R.layout.fragment_list),
     com.example.lesson23.ListView {
+    override val supportsDisplayNewItem = false
+
     private var _binding: FragmentListBinding? = null
     private val binding
         get() = _binding!!
@@ -25,6 +28,7 @@ class ListFragment : Fragment(R.layout.fragment_list),
 
     private val controller = ListController()
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var adapter: UsersListRecyclerDiffAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +36,13 @@ class ListFragment : Fragment(R.layout.fragment_list),
         sharedPreferences =
             requireContext().getSharedPreferences("PREFERENCE_NAME", Context.MODE_PRIVATE)
         setHasOptionsMenu(true)
+
+        adapter = UsersListRecyclerDiffAdapter(layoutInflater,
+            object : UsersListRecyclerDiffAdapter.UserClickListener {
+                override fun onUserClicked(user: User) {
+                    navigator().navigateToDetailsScreen(user)
+                }
+            })
     }
 
 
@@ -54,10 +65,8 @@ class ListFragment : Fragment(R.layout.fragment_list),
                 controller.onEditSecondClicked()
             }
 
-            listView.setOnItemClickListener { parent, view, position, id ->
-                val user = parent.getItemAtPosition(position) as User
-                navigator().navigateToDetailsScreen(user)
-            }
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
         (requireActivity() as AppCompatActivity).supportActionBar?.title = "Список"
 
@@ -92,8 +101,11 @@ class ListFragment : Fragment(R.layout.fragment_list),
     }
 
     override fun displayList(users: List<User>) {
-        val newAdapter = UsersListAdapter(layoutInflater, users)
-        binding.listView.adapter = newAdapter
+        adapter.setData(users)
+    }
+
+    override fun displayNewItemInList(user: User) {
+        error("displayNewItemInList is not supported")
     }
 
     override fun askForWriteExternalStoragePermission() {

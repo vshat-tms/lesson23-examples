@@ -36,7 +36,12 @@ class ListController {
 
     fun onAddRandomClicked() {
         UserRepository.addRandomUser()
-        view?.displayList(UserRepository.users)
+
+        if(view?.supportsDisplayNewItem == true) {
+            view?.displayNewItemInList(UserRepository.users.last())
+        } else {
+            view?.displayList(UserRepository.users)
+        }
     }
 
 

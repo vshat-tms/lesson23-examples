@@ -19,10 +19,13 @@ class UsersListAdapter(
     override fun getItemId(position: Int) = position.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        //Log.d
         val itemView = when (convertView) {
             null -> layoutInflater.inflate(R.layout.list_item, parent, false)
             else -> convertView
         }
+
+//        val itemView = layoutInflater.inflate(R.layout.list_item, parent, false)
 
         val item = getItem(position)
 
