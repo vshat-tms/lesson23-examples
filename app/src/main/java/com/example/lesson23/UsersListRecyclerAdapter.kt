@@ -39,15 +39,19 @@ class UsersListRecyclerAdapter(
             userFullNameTextView.text = item.firstName + " " + item.lastName
             userAddressTextView.text = item.address
         }
-
-        holder.binding.root.setOnClickListener {
-            clickListener.onUserClicked(item)
-        }
     }
 
     override fun getItemCount(): Int = users.size
 
-    class MyViewHolder(val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class MyViewHolder(val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    val user = users[adapterPosition]
+                    clickListener.onUserClicked(user)
+                }
+            }
+        }
     }
 
     interface UserClickListener {

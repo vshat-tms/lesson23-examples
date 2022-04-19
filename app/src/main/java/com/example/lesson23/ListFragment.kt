@@ -11,6 +11,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lesson23.databinding.FragmentListBinding
 
@@ -66,7 +67,7 @@ class ListFragment : Fragment(R.layout.fragment_list),
             }
 
             recyclerView.adapter = adapter
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         }
         (requireActivity() as AppCompatActivity).supportActionBar?.title = "Список"
 

@@ -32,13 +32,18 @@ class UsersListRecyclerDiffAdapter(
             userFullNameTextView.text = item.firstName + " " + item.lastName
             userAddressTextView.text = item.address
         }
-
-        holder.binding.root.setOnClickListener {
-            clickListener.onUserClicked(item)
-        }
     }
 
-    class MyViewHolder(val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class MyViewHolder(val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    val user = getItem(adapterPosition)
+                    clickListener.onUserClicked(user)
+                }
+            }
+        }
+    }
 
     interface UserClickListener {
         fun onUserClicked(user: User)
