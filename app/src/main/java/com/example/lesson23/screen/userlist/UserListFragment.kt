@@ -1,82 +1,84 @@
-package com.example.lesson23
+package com.example.lesson23.screen.userlist
 
-import android.Manifest
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.lesson23.R
+import com.example.lesson23.User
 import com.example.lesson23.databinding.FragmentListBinding
+import com.example.lesson23.navigator
 
-private const val REQUEST_PERMISSION_CODE = 2
-
-
-class ListFragment : Fragment(R.layout.fragment_list),
-    com.example.lesson23.ListView {
-    override val supportsDisplayNewItem = false
-
+class UserListFragment : Fragment(R.layout.fragment_list){
     private var _binding: FragmentListBinding? = null
     private val binding
         get() = _binding!!
 
-
-    private val controller = ListController()
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var adapter: UsersListRecyclerDiffAdapter
-
+    private lateinit var viewModel: UserListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedPreferences =
-            requireContext().getSharedPreferences("PREFERENCE_NAME", Context.MODE_PRIVATE)
         setHasOptionsMenu(true)
 
         adapter = UsersListRecyclerDiffAdapter(layoutInflater,
             object : UsersListRecyclerDiffAdapter.UserClickListener {
                 override fun onUserClicked(user: User) {
-                    navigator().navigateToDetailsScreen(user)
+                    viewModel.onUserClicked(user)
                 }
             })
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel = ViewModelProvider(this).get(UserListViewModel::class.java)
 
         _binding = FragmentListBinding.bind(view)
 
         binding.apply {
             addListItemButton.setOnClickListener {
-                controller.onAddRandomClicked()
+                viewModel.onAddRandomClicked()
             }
             removeAllItemsButton.setOnClickListener {
-                controller.onRemoveAllClicked()
+                viewModel.onRemoveAllClicked()
             }
             removeLastItemsButton.setOnClickListener {
-                controller.onRemoveLastClicked()
+                viewModel.onRemoveLastClicked()
             }
             editSecondItemButton.setOnClickListener {
-                controller.onEditSecondClicked()
+                viewModel.onEditSecondClicked()
             }
 
             recyclerView.adapter = adapter
-            recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+            recyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
         (requireActivity() as AppCompatActivity).supportActionBar?.title = "Список"
 
+        viewModel.users.observe(viewLifecycleOwner) {
+            adapter.setData(it)
+        }
 
-        controller.onViewReady(this)
+        viewModel.showListEmptyMessageErrorEvent.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { message ->
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        viewModel.openDetailsScreenEvent.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { id ->
+                navigator().navigateToDetailsScreen(id)
+            }
+        }
     }
 
     override fun onDestroyView() {
-        controller.onViewDestroyed()
         super.onDestroyView()
         _binding = null
     }
@@ -89,32 +91,15 @@ class ListFragment : Fragment(R.layout.fragment_list),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_item_list_add_item -> {
-                controller.onAddRandomClicked()
+                viewModel.onAddRandomClicked()
                 return true
             }
             R.id.menu_item_list_delete_all -> {
-                controller.onRemoveAllClicked()
+                viewModel.onRemoveAllClicked()
                 return true
             }
         }
 
         return super.onOptionsItemSelected(item)
     }
-
-    override fun displayList(users: List<User>) {
-        adapter.setData(users)
-    }
-
-    override fun displayNewItemInList(user: User) {
-        error("displayNewItemInList is not supported")
-    }
-
-    override fun askForWriteExternalStoragePermission() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            REQUEST_PERMISSION_CODE
-        );
-    }
-
 }

@@ -1,4 +1,4 @@
-package com.example.lesson23
+package com.example.lesson23.screen.userlist
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lesson23.User
 import com.example.lesson23.databinding.ListItemBinding
 
 class UsersListRecyclerDiffAdapter(
@@ -29,7 +30,7 @@ class UsersListRecyclerDiffAdapter(
         Log.d("UsersListRecyclerAdapter", "onBindViewHolder: $item")
 
         holder.binding.apply {
-            userFullNameTextView.text = item.firstName + " " + item.lastName
+            userFullNameTextView.text = "${item.id}. ${item.firstName} ${item.lastName}"
             userAddressTextView.text = item.address
         }
     }

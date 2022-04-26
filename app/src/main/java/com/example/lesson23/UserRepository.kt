@@ -5,9 +5,13 @@ import com.google.gson.GsonBuilder
 import java.io.File
 
 object UserRepository {
+    interface RepositoryChangeListener {
+        fun onUserListUpdated(newList: List<User>)
+    }
+
     private var _users = mutableListOf<User>()
-    var users: List<User> = _users
-        private set
+
+    private val listeners = mutableListOf<RepositoryChangeListener>()
 
     private val gson = GsonBuilder().apply {
         setPrettyPrinting()
@@ -17,6 +21,14 @@ object UserRepository {
 
     init {
         loadList()
+    }
+
+    fun addListener(listener: RepositoryChangeListener) {
+        listeners.add(listener)
+    }
+
+    fun removeListener(listener: RepositoryChangeListener) {
+        listeners.remove(listener)
     }
 
     fun addRandomUser() {
@@ -40,6 +52,17 @@ object UserRepository {
         saveList()
     }
 
+    fun updateUserById(id: Long, user: User, callback: () -> Unit) {
+        AppExecutors.ioExecutor.execute {
+            val index = _users.indexOfFirst { it.id == id }
+            if (index != -1) {
+                updateUser(index, user)
+            }
+            Thread.sleep(1000)
+            callback()
+        }
+    }
+
     private fun createRandomUser() = User(
         faker.name().firstName(),
         faker.name().lastName(),
@@ -47,21 +70,41 @@ object UserRepository {
     )
 
     private fun loadList() {
-        val file = File(MyApplication.instance.filesDir, "users.json")
-        if (file.exists()) {
-            file.bufferedReader().use {
-                val userArray = gson.fromJson(it, Array<User>::class.java)
-                _users = userArray.toMutableList()
-                users = _users
+        AppExecutors.ioExecutor.execute {
+            val file = File(MyApplication.instance.filesDir, "users.json")
+            if (file.exists()) {
+                file.bufferedReader().use {
+                    val userArray = gson.fromJson(it, Array<User>::class.java)
+                    _users = userArray.toMutableList()
+                }
             }
+            notifyListeners()
         }
     }
 
     private fun saveList() {
-        val file = File(MyApplication.instance.filesDir, "users.json")
-        file.bufferedWriter().use {
-            gson.toJson(_users, it)
-            users = _users
+        AppExecutors.ioExecutor.execute {
+            val file = File(MyApplication.instance.filesDir, "users.json")
+            file.bufferedWriter().use {
+                gson.toJson(_users, it)
+            }
+            Thread.sleep(1000)
+            notifyListeners()
+        }
+    }
+
+    private fun notifyListeners() {
+        val listCopy = _users.toMutableList()
+        listeners.forEach {
+            it.onUserListUpdated(listCopy)
+        }
+    }
+
+    fun getUserById(userId: Long, callback: (User?) -> Unit) {
+        AppExecutors.ioExecutor.execute {
+            Thread.sleep(1000)
+            val result = _users.find { it.id == userId }
+            callback(result)
         }
     }
 }

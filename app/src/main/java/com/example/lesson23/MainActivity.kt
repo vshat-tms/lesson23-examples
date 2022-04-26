@@ -3,6 +3,8 @@ package com.example.lesson23
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.lesson23.databinding.ActivityMainBinding
+import com.example.lesson23.screen.userdetails.UserDetailsFragment
+import com.example.lesson23.screen.userlist.UserListFragment
 
 
 class MainActivity : AppCompatActivity(), Navigator {
@@ -20,7 +22,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragmentContainer, ListFragment(), null)
+                .add(R.id.fragmentContainer, UserListFragment(), null)
                 .commit()
         }
 
@@ -29,12 +31,16 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
     }
 
-    override fun navigateToDetailsScreen(user: User) {
+    override fun navigateToDetailsScreen(userId: Long) {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragmentContainer, DetailsFragment.newInstance(user.toString()), null)
+            .replace(R.id.fragmentContainer, UserDetailsFragment.newInstance(userId), null)
             .addToBackStack(null)
             .commit()
+    }
+
+    override fun goBack() {
+        supportFragmentManager.popBackStack()
     }
 
     override fun onSupportNavigateUp(): Boolean {
