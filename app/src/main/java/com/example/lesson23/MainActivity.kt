@@ -27,8 +27,10 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
 
         supportFragmentManager.addOnBackStackChangedListener {
-            supportActionBar?.setDisplayHomeAsUpEnabled(canNavigateUp)
+            updateBackButton()
         }
+
+        updateBackButton()
     }
 
     override fun navigateToDetailsScreen(userId: Long) {
@@ -53,5 +55,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         }
     }
 
-
+    private fun updateBackButton() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(canNavigateUp)
+    }
 }
