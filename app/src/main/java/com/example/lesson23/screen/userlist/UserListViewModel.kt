@@ -4,34 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.lesson23.DataEvent
-import com.example.lesson23.Event
-import com.example.lesson23.User
-import com.example.lesson23.UserRepository
+import com.example.lesson23.db.User
+import com.example.lesson23.repository.UserRepository
 
-class UserListViewModel : ViewModel() {
-    private val _users = MutableLiveData<List<User>>()
-    val users: LiveData<List<User>> = _users
+class UserListViewModel(private val userRepository: UserRepository) : ViewModel() {
+    val users: LiveData<List<User>> = userRepository.getAllUsers()
 
     private val _showListEmptyMessageErrorEvent = MutableLiveData<DataEvent<String>>()
-    val showListEmptyMessageErrorEvent: LiveData<DataEvent<String>> = _showListEmptyMessageErrorEvent
+    val showListEmptyMessageErrorEvent: LiveData<DataEvent<String>> =
+        _showListEmptyMessageErrorEvent
 
     private val _openDetailsScreenEvent = MutableLiveData<DataEvent<Long>>()
     val openDetailsScreenEvent: LiveData<DataEvent<Long>> = _openDetailsScreenEvent
-
-    private var userRepositoryListener = object : UserRepository.RepositoryChangeListener {
-        override fun onUserListUpdated(newList: List<User>) {
-            _users.postValue(newList)
-        }
-    }
-
-    init {
-        UserRepository.addListener(userRepositoryListener)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        UserRepository.removeListener(userRepositoryListener)
-    }
 
     fun onRemoveAllClicked() {
 //        if(UserRepository.users.isEmpty()) {
@@ -39,11 +23,12 @@ class UserListViewModel : ViewModel() {
 //            return
 //        }
 
-        UserRepository.removeAll()
+
+        userRepository.deleteAll()
     }
 
     fun onRemoveLastClicked() {
-        UserRepository.removeLast()
+//        OldUserRepository.removeLast()
     }
 
     fun onEditSecondClicked() {
@@ -54,7 +39,7 @@ class UserListViewModel : ViewModel() {
     }
 
     fun onAddRandomClicked() {
-        UserRepository.addRandomUser()
+        userRepository.addRandomUser()
     }
 
     fun onUserClicked(user: User) {

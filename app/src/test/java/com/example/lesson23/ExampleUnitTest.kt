@@ -1,16 +1,12 @@
 package com.example.lesson23
 
+import com.example.lesson23.db.User
 import com.github.javafaker.Faker
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.json.Json
-import org.json.JSONObject
 import org.junit.Test
 
 import org.junit.Assert.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * Example local unit test, which will execute on the development machine (host).

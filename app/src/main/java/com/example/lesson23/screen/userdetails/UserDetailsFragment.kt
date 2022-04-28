@@ -8,9 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.lesson23.AppExecutors
 import com.example.lesson23.R
 import com.example.lesson23.databinding.FragmentDetailsBinding
+import com.example.lesson23.db.AppDatabase
 import com.example.lesson23.navigator
+import com.example.lesson23.repository.UserRepository
+import com.github.javafaker.Faker
 
 class UserDetailsFragment : Fragment(R.layout.fragment_details) {
     private lateinit var viewModel: UserDetailsViewModel
@@ -18,7 +22,14 @@ class UserDetailsFragment : Fragment(R.layout.fragment_details) {
     private fun initViewModel(userId: Long) {
         val factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return UserDetailsViewModel(userId) as T
+                return UserDetailsViewModel(
+                    userId,
+                    UserRepository(
+                        AppDatabase.instance.userDao(),
+                        AppExecutors.ioExecutor,
+                        Faker.instance()
+                    )
+                ) as T
             }
         }
 

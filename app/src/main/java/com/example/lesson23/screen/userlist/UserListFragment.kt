@@ -8,12 +8,18 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.lesson23.AppExecutors
 import com.example.lesson23.R
-import com.example.lesson23.User
+import com.example.lesson23.db.User
 import com.example.lesson23.databinding.FragmentListBinding
+import com.example.lesson23.db.AppDatabase
 import com.example.lesson23.navigator
+import com.example.lesson23.repository.UserRepository
+import com.example.lesson23.screen.userdetails.UserDetailsViewModel
+import com.github.javafaker.Faker
 
 class UserListFragment : Fragment(R.layout.fragment_list){
     private var _binding: FragmentListBinding? = null
@@ -22,6 +28,22 @@ class UserListFragment : Fragment(R.layout.fragment_list){
 
     private lateinit var adapter: UsersListRecyclerDiffAdapter
     private lateinit var viewModel: UserListViewModel
+
+    private fun initViewModel() {
+        val factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return UserListViewModel(
+                    UserRepository(
+                        AppDatabase.instance.userDao(),
+                        AppExecutors.ioExecutor,
+                        Faker.instance()
+                    )
+                ) as T
+            }
+        }
+
+        viewModel = ViewModelProvider(this, factory).get(UserListViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +60,7 @@ class UserListFragment : Fragment(R.layout.fragment_list){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this).get(UserListViewModel::class.java)
+        initViewModel()
 
         _binding = FragmentListBinding.bind(view)
 

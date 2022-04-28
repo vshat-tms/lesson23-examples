@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.lesson23.User
+import com.example.lesson23.db.User
 import com.example.lesson23.databinding.ListItemBinding
 
 class UsersListRecyclerDiffAdapter(
