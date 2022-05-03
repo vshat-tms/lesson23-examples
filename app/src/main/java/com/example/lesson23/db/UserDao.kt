@@ -1,18 +1,16 @@
 package com.example.lesson23.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteQuery
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM user")
-    fun getAllUsers(): LiveData<List<User>>
+    @RawQuery(observedEntities = [User::class])
+    fun getUsersByQuery(query: SupportSQLiteQuery): LiveData<List<User>>
 
     @Query("SELECT * FROM user WHERE id=:id")
-    fun getUserById(id: Long): LiveData<User?>
+    fun getUserById(id: Long): User?
 
     @Query("DELETE FROM user")
     fun deleteAll()

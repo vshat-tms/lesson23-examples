@@ -1,5 +1,10 @@
 package com.example.lesson23.repository
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.sqlite.db.SimpleSQLiteQuery
+import com.example.lesson23.ResultState
 import com.example.lesson23.db.User
 import com.example.lesson23.db.UserDao
 import com.github.javafaker.Faker
@@ -10,9 +15,50 @@ class UserRepository(
     private val ioExecutor: ExecutorService,
     private val faker: Faker
 ) {
-    fun getAllUsers() = userDao.getAllUsers()
+    fun getAllUsers(userQuery: UserQuery): LiveData<List<User>> {
+        val sortQueryText = when (userQuery.sortOrder) {
+            UserSortOrder.NONE -> ""
+            UserSortOrder.FIRST_NAME_ASC -> "ORDER BY first_name"
+            UserSortOrder.FIRST_NAME_DESC -> "ORDER BY first_name DESC"
+        }
 
-    fun getUserById(id: Long) = userDao.getUserById(id)
+        val params = mutableListOf<Any?>()
+        val searchQueryText = if (userQuery.hasSearchQuery()) {
+            "WHERE first_name LIKE '%' || ? || '%'"
+        } else ""
+
+        if (userQuery.hasSearchQuery()) {
+            params.add(userQuery.searchQuery)
+        }
+
+        val queryText = "SELECT * FROM User $searchQueryText $sortQueryText"
+
+        val query = SimpleSQLiteQuery(
+            queryText,
+            params.toTypedArray()
+        )
+
+        Log.d("UserRepository", "userQuery=$userQuery, queryText=$queryText")
+
+        return userDao.getUsersByQuery(query)
+    }
+
+    fun getUserById(id: Long): LiveData<ResultState<User>> {
+        val result = MutableLiveData<ResultState<User>>(ResultState.Loading())
+
+        ioExecutor.execute {
+            Thread.sleep(1000)
+
+            val user = userDao.getUserById(id)
+            if (user != null) {
+                result.postValue(ResultState.Success(user))
+            } else {
+                result.postValue(ResultState.Error(RuntimeException("User not found")))
+            }
+        }
+
+        return result
+    }
 
     fun deleteAll() {
         ioExecutor.execute {
@@ -30,7 +76,13 @@ class UserRepository(
         }
     }
 
-    fun updateUser(user: User) = userDao.updateUser(user)
+    fun updateUser(user: User, onDoneCallback: () -> Unit) {
+        ioExecutor.execute {
+            Thread.sleep(1000)
+            userDao.updateUser(user)
+            onDoneCallback()
+        }
+    }
 
     private fun createRandomUser() = User(
         0,

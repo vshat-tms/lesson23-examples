@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.map
 import com.example.lesson23.AppExecutors
 import com.example.lesson23.R
+import com.example.lesson23.ResultState
 import com.example.lesson23.databinding.FragmentDetailsBinding
 import com.example.lesson23.db.AppDatabase
 import com.example.lesson23.navigator
@@ -57,24 +59,33 @@ class UserDetailsFragment : Fragment(R.layout.fragment_details) {
         }
 
         viewModel.currentUser.observe(viewLifecycleOwner) {
-            binding.firstNameEditText.setText(it?.firstName ?: "")
-            binding.lastNameEditText.setText(it?.lastName ?: "")
-        }
+            when(it) {
+                is ResultState.Error -> {
+                    binding.errorTextView.visibility = View.VISIBLE
+                    binding.errorTextView.text = "Отсутствует пользователь"
+                    binding.progressBar.visibility = View.GONE
+                }
+                is ResultState.Loading -> {
+                    binding.errorTextView.visibility = View.GONE
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.infoView.visibility = View.GONE
 
-        viewModel.isUserMissingError.observe(viewLifecycleOwner) {
-            binding.errorTextView.visibility = if(it) View.VISIBLE else View.GONE
-            binding.errorTextView.text = "Отсутствует пользователь"
+                }
+                is ResultState.Success -> {
+                    binding.errorTextView.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
+                    binding.infoView.visibility = View.VISIBLE
+
+                    binding.firstNameEditText.setText(it.data.firstName)
+                    binding.lastNameEditText.setText(it.data.lastName)
+                }
+            }
         }
 
         viewModel.needCloseScreen.observe(viewLifecycleOwner) {
             if(it) {
                 navigator().goBack()
             }
-        }
-
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            binding.progressBar.visibility = if(it) View.VISIBLE else View.GONE
-            binding.infoView.visibility = if(!it) View.VISIBLE else View.GONE
         }
 
         viewModel.isSavingUser.observe(viewLifecycleOwner) {

@@ -7,4 +7,16 @@
     <item
         android:id="@+id/menu_item_list_delete_all"
         android:title="Удалить всё" />
+
+    <item
+        android:id="@+id/menu_item_list_sort_by_id"
+        android:title="Сортировка по айди (1-9)" />
+
+    <item
+        android:id="@+id/menu_item_list_sort_by_name"
+        android:title="Сортировка по имени (а-я)" />
+
+    <item
+        android:id="@+id/menu_item_list_sort_by_name_desc"
+        android:title="Сортировка по имени (я-а)" />
 </menu>

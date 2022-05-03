@@ -1,6 +1,8 @@
 package com.example.lesson23.screen.userlist
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -13,15 +15,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lesson23.AppExecutors
 import com.example.lesson23.R
-import com.example.lesson23.db.User
 import com.example.lesson23.databinding.FragmentListBinding
 import com.example.lesson23.db.AppDatabase
+import com.example.lesson23.db.User
 import com.example.lesson23.navigator
 import com.example.lesson23.repository.UserRepository
-import com.example.lesson23.screen.userdetails.UserDetailsViewModel
+import com.example.lesson23.repository.UserSortOrder
 import com.github.javafaker.Faker
 
-class UserListFragment : Fragment(R.layout.fragment_list){
+class UserListFragment : Fragment(R.layout.fragment_list) {
     private var _binding: FragmentListBinding? = null
     private val binding
         get() = _binding!!
@@ -77,6 +79,23 @@ class UserListFragment : Fragment(R.layout.fragment_list){
             editSecondItemButton.setOnClickListener {
                 viewModel.onEditSecondClicked()
             }
+            searchEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+
+                override fun afterTextChanged(s: Editable) {
+                    viewModel.onSearchQueryChanged(s.toString())
+                }
+
+            })
 
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -118,6 +137,18 @@ class UserListFragment : Fragment(R.layout.fragment_list){
             }
             R.id.menu_item_list_delete_all -> {
                 viewModel.onRemoveAllClicked()
+                return true
+            }
+            R.id.menu_item_list_sort_by_name_desc -> {
+                viewModel.setSortOrder(UserSortOrder.FIRST_NAME_DESC)
+                return true
+            }
+            R.id.menu_item_list_sort_by_name -> {
+                viewModel.setSortOrder(UserSortOrder.FIRST_NAME_ASC)
+                return true
+            }
+            R.id.menu_item_list_sort_by_id -> {
+                viewModel.setSortOrder(UserSortOrder.NONE)
                 return true
             }
         }
