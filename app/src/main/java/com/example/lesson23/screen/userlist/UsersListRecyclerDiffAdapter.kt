@@ -3,16 +3,19 @@ package com.example.lesson23.screen.userlist
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.lesson23.db.User
 import com.example.lesson23.databinding.ListItemBinding
+import com.example.lesson23.db.User
 
 class UsersListRecyclerDiffAdapter(
     private val layoutInflater: LayoutInflater,
     private val clickListener: UserClickListener
 ) : ListAdapter<User, UsersListRecyclerDiffAdapter.MyViewHolder>(DIFF_CALLBACK) {
+
+    private val checkedIds = mutableSetOf<Long>()
 
     fun setData(users: List<User>) {
         submitList(users.toMutableList())
@@ -30,6 +33,7 @@ class UsersListRecyclerDiffAdapter(
         Log.d("UsersListRecyclerAdapter", "onBindViewHolder: $item")
 
         holder.binding.apply {
+            checkbox.isChecked = checkedIds.contains(item.id)
             userFullNameTextView.text = "${item.id}. ${item.firstName} ${item.lastName}"
             userAddressTextView.text = item.address
         }
@@ -43,6 +47,24 @@ class UsersListRecyclerDiffAdapter(
                     clickListener.onUserClicked(user)
                 }
             }
+
+            binding.checkbox.setOnCheckedChangeListener(object :
+                CompoundButton.OnCheckedChangeListener {
+                override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                    if (adapterPosition == RecyclerView.NO_POSITION) {
+                        return
+                    }
+                    val user = getItem(adapterPosition)
+
+                    if (isChecked) {
+                        checkedIds.add(user.id)
+                    } else {
+                        checkedIds.remove(user.id)
+                    }
+
+                    Log.i("UsersListRecyclerDiffAdapter", "checkedIds=$checkedIds")
+                }
+            })
         }
     }
 

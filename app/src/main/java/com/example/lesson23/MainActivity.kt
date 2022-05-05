@@ -2,7 +2,11 @@ package com.example.lesson23
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.lesson23.databinding.ActivityMainBinding
+import com.example.lesson23.screen.home.HomeFragment
+import com.example.lesson23.screen.networkuserdetails.NetworkUserDetailsFragment
+import com.example.lesson23.screen.networkuserlist.NetworkUserListFragment
 import com.example.lesson23.screen.userdetails.UserDetailsFragment
 import com.example.lesson23.screen.userlist.UserListFragment
 
@@ -22,7 +26,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragmentContainer, UserListFragment(), null)
+                .add(R.id.fragmentContainer, HomeFragment(), null)
                 .commit()
         }
 
@@ -33,10 +37,22 @@ class MainActivity : AppCompatActivity(), Navigator {
         updateBackButton()
     }
 
-    override fun navigateToDetailsScreen(userId: Long) {
+    override fun navigateToDbListScreen() =
+        goTo { UserListFragment() }
+
+    override fun navigateToNetworkListScreen() =
+        goTo { NetworkUserListFragment() }
+
+    override fun navigateToDetailsScreen(userId: Long) =
+        goTo { UserDetailsFragment.newInstance(userId) }
+
+    override fun navigateToNetworkDetailsScreen(userId: Long) =
+        goTo { NetworkUserDetailsFragment.newInstance(userId) }
+
+    private fun goTo(fragmentFactory: () -> Fragment) {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragmentContainer, UserDetailsFragment.newInstance(userId), null)
+            .replace(R.id.fragmentContainer, fragmentFactory(), null)
             .addToBackStack(null)
             .commit()
     }
@@ -47,7 +63,7 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun onSupportNavigateUp(): Boolean {
         return if (canNavigateUp) {
-            supportFragmentManager.popBackStack()
+            goBack()
             false
         } else {
             finish()

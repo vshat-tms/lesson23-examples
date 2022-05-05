@@ -8,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +20,7 @@ import com.example.lesson23.db.User
 import com.example.lesson23.navigator
 import com.example.lesson23.repository.UserRepository
 import com.example.lesson23.repository.UserSortOrder
+import com.example.lesson23.setTitle
 import com.github.javafaker.Faker
 
 class UserListFragment : Fragment(R.layout.fragment_list) {
@@ -61,6 +61,7 @@ class UserListFragment : Fragment(R.layout.fragment_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setTitle("Список (база)")
 
         initViewModel()
 
@@ -100,7 +101,6 @@ class UserListFragment : Fragment(R.layout.fragment_list) {
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = "Список"
 
         viewModel.users.observe(viewLifecycleOwner) {
             adapter.setData(it)
