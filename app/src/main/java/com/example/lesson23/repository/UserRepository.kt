@@ -8,11 +8,12 @@ import com.example.lesson23.ResultState
 import com.example.lesson23.db.User
 import com.example.lesson23.db.UserDao
 import com.github.javafaker.Faker
+import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 
 class UserRepository(
     private val userDao: UserDao,
-    private val ioExecutor: ExecutorService,
+    private val ioExecutor: Executor,
     private val faker: Faker
 ) {
     fun getAllUsers(userQuery: UserQuery): LiveData<List<User>> {
