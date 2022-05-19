@@ -11,14 +11,14 @@ import com.example.lesson23.R
 import com.example.lesson23.ResultState
 import com.example.lesson23.databinding.FragmentNetworkListBinding
 import com.example.lesson23.db.User
-import com.example.lesson23.di.DependencyStorage
 import com.example.lesson23.navigator
 import com.example.lesson23.network.InvalidResponseException
 import com.example.lesson23.network.UserNotFoundException
 import com.example.lesson23.screen.userlist.UsersListRecyclerDiffAdapter
 import com.example.lesson23.setTitle
+import org.koin.core.component.KoinComponent
 
-class NetworkUserListFragment : Fragment(R.layout.fragment_network_list) {
+class NetworkUserListFragment : Fragment(R.layout.fragment_network_list), KoinComponent {
     private lateinit var viewModel: NetworkUserListViewModel
     private lateinit var adapter: UsersListRecyclerDiffAdapter
 
@@ -77,8 +77,8 @@ class NetworkUserListFragment : Fragment(R.layout.fragment_network_list) {
         val factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return NetworkUserListViewModel(
-                    DependencyStorage.Repositories.networkUserRepository,
-                    DependencyStorage.Mappers.reqresUserMapper
+                    getKoin().get(),
+                    getKoin().get()
                 ) as T
             }
         }

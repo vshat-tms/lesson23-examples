@@ -10,19 +10,23 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.lesson23.R
 import com.example.lesson23.ResultState
 import com.example.lesson23.databinding.FragmentDetailsBinding
-import com.example.lesson23.di.DependencyStorage
 import com.example.lesson23.navigator
 import com.example.lesson23.setTitle
+import org.koin.core.component.KoinComponent
 
-class UserDetailsFragment : Fragment(R.layout.fragment_details) {
+class UserDetailsFragment : Fragment(R.layout.fragment_details), KoinComponent {
     private lateinit var viewModel: UserDetailsViewModel
 
     private fun initViewModel(userId: Long) {
+        // https://insert-koin.io/docs/reference/koin-android/viewmodel/
+        // раздел "Passing Parameters to Constructor"
+        // можно использовать by viewModel{ parametersOf(id)}
+
         val factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return UserDetailsViewModel(
                     userId,
-                    DependencyStorage.Repositories.userRepository
+                    getKoin().get()
                 ) as T
             }
         }

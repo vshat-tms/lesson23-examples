@@ -11,13 +11,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.lesson23.R
 import com.example.lesson23.ResultState
 import com.example.lesson23.databinding.FragmentDetailsBinding
-import com.example.lesson23.di.DependencyStorage
 import com.example.lesson23.navigator
 import com.example.lesson23.network.InvalidResponseException
 import com.example.lesson23.network.UserNotFoundException
 import com.example.lesson23.setTitle
+import org.koin.core.component.KoinComponent
 
-class NetworkUserDetailsFragment : Fragment(R.layout.fragment_details) {
+class NetworkUserDetailsFragment : Fragment(R.layout.fragment_details), KoinComponent {
     private lateinit var viewModel: NetworkUserDetailsViewModel
 
     private fun initViewModel(userId: Long) {
@@ -25,8 +25,8 @@ class NetworkUserDetailsFragment : Fragment(R.layout.fragment_details) {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return NetworkUserDetailsViewModel(
                     userId,
-                    DependencyStorage.Repositories.networkUserRepository,
-                    DependencyStorage.Mappers.reqresUserMapper
+                    getKoin().get(),
+                    getKoin().get()
                 ) as T
             }
         }

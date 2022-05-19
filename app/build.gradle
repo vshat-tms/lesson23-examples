@@ -39,6 +39,10 @@ dependencies {
     def lifecycle_version = "2.5.0-beta01"
     def roomVersion = '2.3.0'
     def retrofitVersion = '2.9.0'
+    def koinVersion = '3.2.0'
+
+    implementation "io.insert-koin:koin-core:$koinVersion"
+    implementation "io.insert-koin:koin-android:$koinVersion"
 
     // Room components
     implementation "androidx.room:room-runtime:$roomVersion"

@@ -9,37 +9,24 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lesson23.R
 import com.example.lesson23.databinding.FragmentListBinding
 import com.example.lesson23.db.User
-import com.example.lesson23.di.DependencyStorage
 import com.example.lesson23.navigator
 import com.example.lesson23.repository.UserSortOrder
 import com.example.lesson23.setTitle
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.component.KoinComponent
 
 
-class UserListFragment : Fragment(R.layout.fragment_list) {
+class UserListFragment : Fragment(R.layout.fragment_list), KoinComponent {
     private var _binding: FragmentListBinding? = null
     private val binding
         get() = _binding!!
 
     private lateinit var adapter: UsersListRecyclerDiffAdapter
-    private lateinit var viewModel: UserListViewModel
-
-    private fun initViewModel() {
-        val factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return UserListViewModel(
-                    DependencyStorage.Repositories.userRepository
-                ) as T
-            }
-        }
-
-        viewModel = ViewModelProvider(this, factory).get(UserListViewModel::class.java)
-    }
+    private val vm: UserListViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +35,7 @@ class UserListFragment : Fragment(R.layout.fragment_list) {
         adapter = UsersListRecyclerDiffAdapter(layoutInflater,
             object : UsersListRecyclerDiffAdapter.UserClickListener {
                 override fun onUserClicked(user: User) {
-                    viewModel.onUserClicked(user)
+                    vm.onUserClicked(user)
                 }
             })
     }
@@ -57,22 +44,20 @@ class UserListFragment : Fragment(R.layout.fragment_list) {
         super.onViewCreated(view, savedInstanceState)
         setTitle("Список (база)")
 
-        initViewModel()
-
         _binding = FragmentListBinding.bind(view)
 
         binding.apply {
             addListItemButton.setOnClickListener {
-                viewModel.onAddRandomClicked()
+                vm.onAddRandomClicked()
             }
             removeAllItemsButton.setOnClickListener {
-                viewModel.onRemoveAllClicked()
+                vm.onRemoveAllClicked()
             }
             removeLastItemsButton.setOnClickListener {
-                viewModel.onRemoveLastClicked()
+                vm.onRemoveLastClicked()
             }
             editSecondItemButton.setOnClickListener {
-                viewModel.onEditSecondClicked()
+                vm.onEditSecondClicked()
             }
             searchEditText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
@@ -87,7 +72,7 @@ class UserListFragment : Fragment(R.layout.fragment_list) {
                 }
 
                 override fun afterTextChanged(s: Editable) {
-                    viewModel.onSearchQueryChanged(s.toString())
+                    vm.onSearchQueryChanged(s.toString())
                 }
 
             })
@@ -96,17 +81,17 @@ class UserListFragment : Fragment(R.layout.fragment_list) {
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
 
-        viewModel.users.observe(viewLifecycleOwner) {
+        vm.users.observe(viewLifecycleOwner) {
             adapter.setData(it)
         }
 
-        viewModel.showListEmptyMessageErrorEvent.observe(viewLifecycleOwner) {
+        vm.showListEmptyMessageErrorEvent.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { message ->
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
         }
 
-        viewModel.openDetailsScreenEvent.observe(viewLifecycleOwner) {
+        vm.openDetailsScreenEvent.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { id ->
                 navigator().navigateToDetailsScreen(id)
             }
@@ -126,23 +111,23 @@ class UserListFragment : Fragment(R.layout.fragment_list) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_item_list_add_item -> {
-                viewModel.onAddRandomClicked()
+                vm.onAddRandomClicked()
                 return true
             }
             R.id.menu_item_list_delete_all -> {
-                viewModel.onRemoveAllClicked()
+                vm.onRemoveAllClicked()
                 return true
             }
             R.id.menu_item_list_sort_by_name_desc -> {
-                viewModel.setSortOrder(UserSortOrder.FIRST_NAME_DESC)
+                vm.setSortOrder(UserSortOrder.FIRST_NAME_DESC)
                 return true
             }
             R.id.menu_item_list_sort_by_name -> {
-                viewModel.setSortOrder(UserSortOrder.FIRST_NAME_ASC)
+                vm.setSortOrder(UserSortOrder.FIRST_NAME_ASC)
                 return true
             }
             R.id.menu_item_list_sort_by_id -> {
-                viewModel.setSortOrder(UserSortOrder.NONE)
+                vm.setSortOrder(UserSortOrder.NONE)
                 return true
             }
         }

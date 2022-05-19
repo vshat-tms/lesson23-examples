@@ -1,40 +1,39 @@
 package com.example.lesson23.di
 
-import com.example.lesson23.network.UserApi
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-
 object ServiceLocatorExample {
-    private val serviceMap = mutableMapOf<Class<*>, Any>()
+    val serviceMap = mutableMapOf<Class<*>, Any>()
 
     init {
-        addService(
-            HttpLoggingInterceptor::class.java,
+        single {
             DependencyFactories.createLoggingInterceptor()
+        }
+
+        addService(
+            DependencyFactories.createHttpClient(get())
         )
 
         addService(
-            OkHttpClient::class.java,
-            DependencyFactories.createHttpClient(getService(HttpLoggingInterceptor::class.java))
+            DependencyFactories.createRetrofit(get())
         )
 
         addService(
-            Retrofit::class.java,
-            DependencyFactories.createRetrofit(getService(OkHttpClient::class.java))
-        )
-
-        addService(
-            UserApi::class.java,
-            DependencyFactories.createUserApi(getService(Retrofit::class.java))
+            DependencyFactories.createUserApi(get())
         )
     }
 
-    fun <T : Any> addService(clazz: Class<T>, instance: T) {
-        serviceMap[clazz] = instance
+    inline fun <reified T : Any> addService(instance: T) {
+        serviceMap[T::class.java] = instance
     }
 
     fun <T> getService(clazz: Class<T>): T {
         return serviceMap[clazz] as T
+    }
+
+    inline fun <reified T> get(): T {
+        return serviceMap[T::class.java] as T
+    }
+
+    inline fun <reified T : Any> single(lambda: () -> T) {
+        serviceMap[T::class.java] = lambda()
     }
 }

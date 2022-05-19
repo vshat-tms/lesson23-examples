@@ -16,7 +16,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.Executor
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 object DependencyFactories {
@@ -59,7 +58,7 @@ object DependencyFactories {
         return logging
     }
 
-    fun createIoExecutor(): ExecutorService {
+    fun createIoExecutor(): Executor {
         return Executors.newFixedThreadPool(4)
     }
 
