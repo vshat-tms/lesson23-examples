@@ -9,7 +9,6 @@ import com.example.lesson23.db.User
 import com.example.lesson23.db.UserDao
 import com.github.javafaker.Faker
 import java.util.concurrent.Executor
-import java.util.concurrent.ExecutorService
 
 class UserRepository(
     private val userDao: UserDao,

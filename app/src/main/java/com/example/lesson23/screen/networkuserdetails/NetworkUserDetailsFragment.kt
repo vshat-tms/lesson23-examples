@@ -11,12 +11,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.lesson23.R
 import com.example.lesson23.ResultState
 import com.example.lesson23.databinding.FragmentDetailsBinding
-import com.example.lesson23.mappers.ReqresUserToUserMapper
+import com.example.lesson23.di.DependencyStorage
 import com.example.lesson23.navigator
 import com.example.lesson23.network.InvalidResponseException
-import com.example.lesson23.network.UserApi
 import com.example.lesson23.network.UserNotFoundException
-import com.example.lesson23.repository.NetworkUserRepository
 import com.example.lesson23.setTitle
 
 class NetworkUserDetailsFragment : Fragment(R.layout.fragment_details) {
@@ -27,8 +25,8 @@ class NetworkUserDetailsFragment : Fragment(R.layout.fragment_details) {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return NetworkUserDetailsViewModel(
                     userId,
-                    NetworkUserRepository(UserApi.create()),
-                    ReqresUserToUserMapper()
+                    DependencyStorage.Repositories.networkUserRepository,
+                    DependencyStorage.Mappers.reqresUserMapper
                 ) as T
             }
         }

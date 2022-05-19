@@ -12,16 +12,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.lesson23.AppExecutors
 import com.example.lesson23.R
 import com.example.lesson23.databinding.FragmentListBinding
-import com.example.lesson23.db.AppDatabase
 import com.example.lesson23.db.User
+import com.example.lesson23.di.DependencyStorage
 import com.example.lesson23.navigator
-import com.example.lesson23.repository.UserRepository
 import com.example.lesson23.repository.UserSortOrder
 import com.example.lesson23.setTitle
-import com.github.javafaker.Faker
+
 
 class UserListFragment : Fragment(R.layout.fragment_list) {
     private var _binding: FragmentListBinding? = null
@@ -35,11 +33,7 @@ class UserListFragment : Fragment(R.layout.fragment_list) {
         val factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return UserListViewModel(
-                    UserRepository(
-                        AppDatabase.instance.userDao(),
-                        AppExecutors.ioExecutor,
-                        Faker.instance()
-                    )
+                    DependencyStorage.Repositories.userRepository
                 ) as T
             }
         }

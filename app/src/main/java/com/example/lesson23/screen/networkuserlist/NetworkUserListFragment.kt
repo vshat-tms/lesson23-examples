@@ -11,12 +11,10 @@ import com.example.lesson23.R
 import com.example.lesson23.ResultState
 import com.example.lesson23.databinding.FragmentNetworkListBinding
 import com.example.lesson23.db.User
-import com.example.lesson23.mappers.ReqresUserToUserMapper
+import com.example.lesson23.di.DependencyStorage
 import com.example.lesson23.navigator
 import com.example.lesson23.network.InvalidResponseException
-import com.example.lesson23.network.UserApi
 import com.example.lesson23.network.UserNotFoundException
-import com.example.lesson23.repository.NetworkUserRepository
 import com.example.lesson23.screen.userlist.UsersListRecyclerDiffAdapter
 import com.example.lesson23.setTitle
 
@@ -79,8 +77,8 @@ class NetworkUserListFragment : Fragment(R.layout.fragment_network_list) {
         val factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return NetworkUserListViewModel(
-                    NetworkUserRepository(UserApi.create()),
-                    ReqresUserToUserMapper()
+                    DependencyStorage.Repositories.networkUserRepository,
+                    DependencyStorage.Mappers.reqresUserMapper
                 ) as T
             }
         }

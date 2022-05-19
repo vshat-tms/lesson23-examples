@@ -7,11 +7,12 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.lesson23.*
+import com.example.lesson23.R
+import com.example.lesson23.ResultState
 import com.example.lesson23.databinding.FragmentDetailsBinding
-import com.example.lesson23.db.AppDatabase
-import com.example.lesson23.repository.UserRepository
-import com.github.javafaker.Faker
+import com.example.lesson23.di.DependencyStorage
+import com.example.lesson23.navigator
+import com.example.lesson23.setTitle
 
 class UserDetailsFragment : Fragment(R.layout.fragment_details) {
     private lateinit var viewModel: UserDetailsViewModel
@@ -21,11 +22,7 @@ class UserDetailsFragment : Fragment(R.layout.fragment_details) {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return UserDetailsViewModel(
                     userId,
-                    UserRepository(
-                        AppDatabase.instance.userDao(),
-                        AppExecutors.ioExecutor,
-                        Faker.instance()
-                    )
+                    DependencyStorage.Repositories.userRepository
                 ) as T
             }
         }

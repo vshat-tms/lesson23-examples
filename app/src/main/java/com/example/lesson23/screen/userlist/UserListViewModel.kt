@@ -1,6 +1,9 @@
 package com.example.lesson23.screen.userlist
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import com.example.lesson23.DataEvent
 import com.example.lesson23.db.User
 import com.example.lesson23.repository.UserQuery

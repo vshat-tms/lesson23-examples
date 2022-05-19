@@ -1,5 +1,6 @@
 package com.example.lesson23.repository
 
+import com.example.lesson23.di.ServiceLocatorExample
 import com.example.lesson23.network.ReqresUser
 import com.example.lesson23.network.ReqresUserApiResponse
 import com.example.lesson23.network.ReqresUserListApiResponse
@@ -9,7 +10,8 @@ import retrofit2.Callback
 
 class NetworkUserRepository(private val userApi: UserApi) {
     fun getUsers(callback: Callback<ReqresUserListApiResponse>) {
-        userApi.getUsers().enqueue(callback)
+        val myUserApi = ServiceLocatorExample.getService(UserApi::class.java)
+        myUserApi.getUsers().enqueue(callback)
     }
 
     fun getUsersById(id: Long, callback: Callback<ReqresUserApiResponse>) {
